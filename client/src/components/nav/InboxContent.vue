@@ -6,10 +6,10 @@
     </form>
     <div class="contacts-outter">
         <ul class="list-unstyled contacts">
-            <contact :dataTarget="'#inbox-message-1'" />
-            <contact :dataTarget="'#inbox-message-2'" />
-            <contact :dataTarget="'#inbox-message-3'" />
-            <contact :dataTarget="'#inbox-message-4'" />
+            <!-- <contact :dataTarget="'#inbox-message-1'" /> -->
+            <!-- <contact :dataTarget="'#inbox-message-2'" /> -->
+            <!-- <contact :dataTarget="'#inbox-message-3'" /> -->
+            <!-- <contact :dataTarget="'#inbox-message-4'" /> -->
         </ul>
     </div>
 </div>

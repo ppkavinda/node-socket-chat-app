@@ -4,13 +4,11 @@
 
     <div class="message-body">
         <div class="message-info">
-            <h4> Elon Musk </h4>
-            <h5> <i class="fa fa-clock-o"></i> 2:25 PM </h5>
+            <h4> {{ message.username}} </h4>
+            <h5> <i class="fa fa-clock-o"></i> {{ message.postedOn }} </h5>
         </div>
         <hr>
-        <div class="message-text">
-            I've seen your new template, Dauphin, it's amazing !
-        </div>
+        <div class="message-text">{{ message.body }}</div>
     </div>
     <br>
 </div>
@@ -18,6 +16,7 @@
 
 <script>
 	export default {
-		name: 'MessageInfo'
+		name: 'BubbleInfo',
+        props: ['message'],
 	}
 </script>

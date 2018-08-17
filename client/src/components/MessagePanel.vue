@@ -5,25 +5,24 @@
         <navigation-panel/>
 
         <div class="tab-content">
-            <inbox-message-1/>
+            <chat-box/>
         </div>
     </div>
 </div>
 </template>
 
 <script>
-import NavigationPanel from './nav/NavigationPanel.vue'
-import InboxMessage1 from './chatBox/InboxMessage1.vue'
+import NavigationPanel from './nav/NavigationPanel'
+import ChatBox from './chatBox/ChatBox'
 
 export default {
-  name: 'HelloWorld',
-  components: { NavigationPanel, InboxMessage1 },
+  name: 'MessagePanel',
+  components: { NavigationPanel, ChatBox },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      username: 'Username',
     }
-  },
-  computed: {
   },
 }
 </script>

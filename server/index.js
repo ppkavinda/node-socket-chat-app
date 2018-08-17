@@ -32,10 +32,14 @@ io.on('connection', function (socket) {
 	
 	socket.on('chat', function (data) {
 		console.log(socket.id + " : " + data)
-		io.sockets.emit('chat', data)
+		socket.broadcast.emit('chat', data)
 	})
 
 	socket.on('typing', function (data) {
 		socket.broadcast.emit('typing', data)
+	})
+
+	socket.on('disconnect', function () {
+		console.log('Disconnected: ID - ' + socket.id)
 	})
 })

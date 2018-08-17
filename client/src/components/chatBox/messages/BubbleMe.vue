@@ -5,12 +5,12 @@
     <div class="message-body">
         <div class="message-body-inner">
             <div class="message-info">
-                <h4> me </h4>
-                <h5> <i class="fa fa-clock-o"></i> 2:28 PM </h5>
+                <h4> {{ message.username }} </h4>
+                <h5> <i class="fa fa-clock-o"></i> {{ message.postedOn }} </h5>
             </div>
             <hr>
             <div class="message-text">
-                Thanks, I think I will use this for my next dashboard system.
+            {{ message.body }}
             </div>
         </div>
     </div>
@@ -20,6 +20,7 @@
 
 <script>
 export default {
-	name: 'MessageMy',
+	name: 'BubbleMe',
+    props: ['message'],
 }
 </script>
