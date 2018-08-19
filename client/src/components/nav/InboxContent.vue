@@ -6,10 +6,7 @@
     </form>
     <div class="contacts-outter">
         <ul class="list-unstyled contacts">
-            <!-- <contact :dataTarget="'#inbox-message-1'" /> -->
-            <!-- <contact :dataTarget="'#inbox-message-2'" /> -->
-            <!-- <contact :dataTarget="'#inbox-message-3'" /> -->
-            <!-- <contact :dataTarget="'#inbox-message-4'" /> -->
+            <contact v-for="contact in contacts" :dataTarget="'#inbox-message-1'" :contact="contact"/>
         </ul>
     </div>
 </div>
@@ -21,5 +18,22 @@
 	export default {
 		name: 'InboxContent',
 		components: { Contact },
+        data () {
+            return {
+                contacts: [],
+            }
+        },
+        created () {
+            socket.on('set-contact', (contacts) => {
+                this.contacts = contacts
+            })
+            socket.on('user-disconnect', (user) => {
+                this.contacts.splice(this.contacts.indexOf(user.userId), 1)
+            })
+            socket.on('user-connect', (user) => {
+                console.log(user)
+                this.contacts.push(user)
+            })
+        }
 	}
 </script>

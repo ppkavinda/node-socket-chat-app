@@ -24,7 +24,12 @@ function guest(req, res, next) {
 	}
 }
 
+router.get('/', auth, function (req, res, next) {
+	return res.sendFile(path.join(__dirname + '/../../client/index.html'))
+})
+
 router.get('/chat', auth, function (req, res, next) {
+	global.userId = req.session.userId
 	console.log(req.session.userId)
 	return res.sendFile(path.join(__dirname + '/../../client/index.html'))
 })
@@ -101,6 +106,20 @@ router.get('/logout', auth, function (req, res, next) {
 			}
 		})
 	}
+})
+
+router.get('/myinfo', auth, function (req, res, next) {
+	User.getUser(req.session.userId, function (err, result) {
+		if (err) {
+			next(err)
+		}
+		return res.send({
+			email: result.email,
+			username: result.username,
+			age: result.age,
+			userId: result._id,
+		})
+	})
 })
 
 module.exports = router

@@ -34,13 +34,15 @@
 
 		},
 
-		created () {
+		mounted () {
 			window.socket.on('chat', (msg) => {
 				this.messages.push(msg)
 			})
-			window.socket.on('get-username', function () {
-				socket.emit('set-username', window.user.username)
+
+			window.socket.on('connect', function () {
+					// socket.emit('get-contact', "getcontact")
 			})
+
 			window.Event.$on('send-chat', (msg) => {
 				socket.emit('chat', msg);
 				this.messages.push({username: "me", body: msg.body, type: "me", postedOn: msg.postedOn})

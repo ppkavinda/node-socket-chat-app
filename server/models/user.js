@@ -24,6 +24,7 @@ var UserSchema = new mongoose.Schema({
 	},
 	online: {
 		type: Boolean,
+		required: false,
 	},
 })
 
@@ -57,9 +58,15 @@ UserSchema.statics.logout = function (userId, callback) {
 	})
 }
 
-UserSchema.statics.getUserStatus = function (userId, callback) {
+UserSchema.statics.getUser = function (userId, callback) {
 	User.findOne({_id: userId}, function (err, result) {
-		return callback(err, result.online)
+		return callback(err, result)
+	})
+}
+
+UserSchema.statics.getOnlineUsers = function (callback) {
+	User.find({online: true}, function (err, result) {
+		return callback(err, result)
 	})
 }
 

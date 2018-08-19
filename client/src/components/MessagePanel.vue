@@ -14,6 +14,7 @@
 <script>
 import NavigationPanel from './nav/NavigationPanel'
 import ChatBox from './chatBox/ChatBox'
+import axios from 'axios'
 
 export default {
   name: 'MessagePanel',
@@ -24,6 +25,12 @@ export default {
       username: 'Username',
     }
   },
+    created () {
+    axios.get('/myinfo').then(function (response) {
+      window.User = response.data
+      console.log(User)
+    })
+  }
 }
 </script>
 
