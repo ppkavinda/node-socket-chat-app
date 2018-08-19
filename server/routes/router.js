@@ -1,13 +1,35 @@
 var express = require('express')
 var router = express.Router()
 var User = require('../models/user')
+var Message = require('../models/message')
 var path = require('path')
 
-router.get('/chat', function (req, res, next) {
+// auth middleware
+function auth(req, res, next) {
+	if (req.session.userId) {
+		next()
+	} else {
+		res.status = 400
+		return res.redirect('/login')
+	}
+}
+
+// guest middleware
+function guest(req, res, next) {
+	if (req.session.userId) {
+		res.status = 400
+		return res.redirect('back')
+	} else {
+		next()
+	}
+}
+
+router.get('/chat', auth, function (req, res, next) {
+	console.log(req.session.userId)
 	return res.sendFile(path.join(__dirname + '/../../client/index.html'))
 })
 
-router.get('/login', function (req, res, next) {
+router.get('/login', guest, function (req, res, next) {
 	return res.sendFile(path.join(__dirname + '/../../client/login.html'))
 })
 
@@ -19,7 +41,7 @@ router.post('/login', function (req, res, next) {
 				err.status = 401
 				return next(err)
 			} else {
-				req.session.useId = user._id
+				req.session.userId = user._id
 				return res.redirect('/chat')
 			}
 		})
@@ -30,7 +52,7 @@ router.post('/login', function (req, res, next) {
 	}
 })
 
-router.get('/register', function (req, res, next) {
+router.get('/register', guest, function (req, res, next) {
 	return res.sendFile(path.join(__dirname + '/../../client/register.html'))
 })
 
@@ -48,6 +70,7 @@ router.post('/register', function (req, res, next) {
 			password: req.body.password,
 			age: req.body.age,
 			passwordConf: req.body.passwordConf,
+			online: true,
 		}
 
 		User.create(userData, function (error, user) {
@@ -65,13 +88,16 @@ router.post('/register', function (req, res, next) {
 	}
 })
 
-router.get('/logout', function (req, res, next) {
+router.get('/logout', auth, function (req, res, next) {
 	if (req.session) {
+		var userId = req.session.userId
 		req.session.destroy(function (err) {
 			if (err) {
 				return next(err)
 			} else {
-				return res.redirect('/chat')
+				User.logout(userId, function (result) {
+					return res.redirect('/login')
+				})
 			}
 		})
 	}

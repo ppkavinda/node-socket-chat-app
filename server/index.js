@@ -8,6 +8,7 @@ var socket = require('socket.io')
 var path = require('path')
 
 const PORT = 3000
+global.clientsList = {}
 
 // connecting to MongoDB
 mongoose.connect('mongodb://localhost/socket-chat')
@@ -63,13 +64,28 @@ app.use(function (err, req, res, next) {
 var server = app.listen(PORT, function () {
 	console.log('Server started at port: ' + PORT)
 })
+
+
+
+
+
 var io = socket(server)
 
-
+var User = require('./models/user')
 // listening for a connection
 io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
+
+	socket.emit('get-username', function (username) {
+
+	})
 	
+	socket.on('set-username', function (username) {
+		if (clientsList[socket.id] == undefined) {
+			clientsList[socket.id] = {socket: socket, username: username}
+		}
+	})
+
 	socket.on('chat', function (data) {
 		console.log(socket.id + " : " + JSON.stringify(data))
 		socket.broadcast.emit('chat', data)
@@ -81,5 +97,6 @@ io.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
 		console.log('Disconnected: ID - ' + socket.id)
+		delete clientsList[socket.id]
 	})
 })

@@ -22,6 +22,9 @@ var UserSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	online: {
+		type: Boolean,
+	},
 })
 
 UserSchema.statics.authenticate = function (email, password, callback) {
@@ -36,12 +39,28 @@ UserSchema.statics.authenticate = function (email, password, callback) {
 			}
 			bcrypt.compare(password, user.password, function (err, result) {
 				if (result === true) {
+					// change online status
+					User.updateOne({username: user.username}, {online: true}, function (err, res) {
+
+					})
 					return callback(null, user)
 				} else {
 					return callback()
 				}
 			})
 		})
+}
+
+UserSchema.statics.logout = function (userId, callback) {
+	User.findOneAndUpdate({_id: userId}, {online: false}, function (err, result) {
+		return callback(result)
+	})
+}
+
+UserSchema.statics.getUserStatus = function (userId, callback) {
+	User.findOne({_id: userId}, function (err, result) {
+		return callback(err, result.online)
+	})
 }
 
 UserSchema.pre('save', function (next) {
