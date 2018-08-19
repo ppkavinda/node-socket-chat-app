@@ -4,6 +4,7 @@ import io from 'socket.io-client'
 
 window.socket = io('localhost:3000/chat')
 
+Vue.use(require('vue-moment'))
 // Vue.use(socket)
 window.Event = new Vue();
 

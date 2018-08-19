@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "moment": "^2.22.2",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1",
-    "vue": "^2.5.11"
+    "vue": "^2.5.11",
+    "vue-moment": "^4.0.0"
   },
   "browserslist": [
     "> 1%",

@@ -8,7 +8,7 @@
         <h5>{{ lastMessage.body }}</h5>
     </div>
     <div class="contacts-add">
-        <span class="message-time"> {{ lastMessage.postedOn }}</span>
+        <span class="message-time"> {{ lastMessage.postedOn | moment("h:mm a") }}</span>
         <i class="fa fa-trash-o"></i>
         <i class="fa fa-paperclip"></i>
     </div>
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 	export default {
 		name: 'Contact',
 		props: ['dataTarget', 'contact'],

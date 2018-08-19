@@ -35,17 +35,21 @@
 		},
 
 		mounted () {
-			window.socket.on('chat', (msg) => {
-				this.messages.push(msg)
-			})
+			// window.socket.on('chat', (msg) => {
+				// this.messages.push(msg)
+			// })
 
-			window.socket.on('connect', function () {
+			// window.socket.on('connect', function () {
 					// socket.emit('get-contact', "getcontact")
-			})
+			// })
 
-			window.Event.$on('send-chat', (msg) => {
-				socket.emit('chat', msg);
-				this.messages.push({username: "me", body: msg.body, type: "me", postedOn: msg.postedOn})
+			// window.Event.$on('send-chat', (msg) => {
+				// socket.emit('chat', msg);
+				// this.messages.push({username: "me", body: msg.body, type: "me", postedOn: msg.postedOn})
+			// })
+			window.socket.on('send-message', (msg) => {
+				console.log(msg)
+				this.messages.push(msg)
 			})
 		}
 	}

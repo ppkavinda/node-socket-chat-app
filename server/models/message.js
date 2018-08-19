@@ -1,7 +1,12 @@
 var mongoose = require('mongoose')
 
 var MessageSchema = new mongoose.Schema({
-	username: {
+	from: {
+		type: mongoose.Schema.Types.ObjectId,
+		required: true,
+		ref: 'User',
+	},
+	to: {
 		type: String,
 		required: true,
 	},

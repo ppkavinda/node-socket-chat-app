@@ -24,14 +24,13 @@
             }
         },
         created () {
-            socket.on('set-contact', (contacts) => {
+            socket.on('init-contact', (contacts) => {
                 this.contacts = contacts
             })
             socket.on('user-disconnect', (user) => {
                 this.contacts.splice(this.contacts.indexOf(user.userId), 1)
             })
             socket.on('user-connect', (user) => {
-                console.log(user)
                 this.contacts.push(user)
             })
         }
