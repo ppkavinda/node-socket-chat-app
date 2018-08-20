@@ -35,9 +35,6 @@ app.use(session({
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false }))
 
-// setting path for static files
-app.use(express.static(path.join(__dirname, '../client')))
-
 // printing the url of the request
 app.use((req, res, next) => {
 	console.log(req.method + " " + req.url)
@@ -47,6 +44,9 @@ app.use((req, res, next) => {
 // handling routes
 var routes = require('./routes/router')
 app.use('/', routes)
+
+// setting path for static files
+app.use(express.static(path.join(__dirname, '../client')))
 
 // catch 404 and forward to error handling
 app.use(function (req, res, next) {

@@ -24,8 +24,8 @@ function guest(req, res, next) {
 	}
 }
 
-router.get('/', auth, function (req, res, next) {
-	return res.sendFile(path.join(__dirname + '/../../client/index.html'))
+router.get('/', function (req, res, next) {
+	return res.redirect('/chat')
 })
 
 router.get('/chat', auth, function (req, res, next) {
