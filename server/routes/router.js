@@ -6,18 +6,19 @@ var path = require('path')
 
 // auth middleware
 function auth(req, res, next) {
-	if (req.session.userId) {
-		next()
-	} else {
-		res.status = 400
-		return res.redirect('/login')
-	}
+	User.getUser((req.session.userId), function (err, result) {
+		if (result.online) {
+			next()
+		} else {
+			res.status = 400
+			return res.redirect('/login')
+		}
+	})
 }
 
 // guest middleware
 function guest(req, res, next) {
 	if (req.session.userId) {
-		res.status = 400
 		return res.redirect('back')
 	} else {
 		next()

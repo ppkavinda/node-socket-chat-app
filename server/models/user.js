@@ -41,8 +41,8 @@ UserSchema.statics.authenticate = function (email, password, callback) {
 			bcrypt.compare(password, user.password, function (err, result) {
 				if (result === true) {
 					// change online status
-					User.updateOne({username: user.username}, {online: true}, function (err, res) {
-
+					User.login(user._id, function (err, result) {
+						console.log('authenticate login')
 					})
 					return callback(null, user)
 				} else {
@@ -52,6 +52,11 @@ UserSchema.statics.authenticate = function (email, password, callback) {
 		})
 }
 
+UserSchema.statics.login = function (userId, callback) {
+	User.findOneAndUpdate({_id: userId}, {online: true}, function (err, result) {
+		return callback(err, result)
+	})
+}
 UserSchema.statics.logout = function (userId, callback) {
 	User.findOneAndUpdate({_id: userId}, {online: false}, function (err, result) {
 		return callback(result)

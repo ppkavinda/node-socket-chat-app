@@ -79,6 +79,9 @@ io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
 
 	clientsList[global.userId] = socket
+	User.login(global.userId, function (err, result) {
+		
+	})
 
 // send the online users list to the newly connected user
 	User.getOnlineUsers(function (err, result) {
@@ -105,7 +108,16 @@ io.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
 		console.log('Disconnected: ID - ' + socket.id)
-		socket.broadcast.emit('user-disconnect', { userId: global.userId})
+		var uid = global.userId
 		delete clientsList[global.userId]
+
+		setTimeout(function() {
+			if (!clientsList[global.userId]) {
+				socket.broadcast.emit('user-disconnect', { userId: global.userId})
+				User.logout(uid, function (err, result) {
+					// if user close the browser tab, put him off line after 1s
+				})
+			}
+		}, 1000);
 	})
 })
