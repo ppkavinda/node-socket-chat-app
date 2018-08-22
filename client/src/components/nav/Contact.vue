@@ -17,14 +17,24 @@
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
+
 	export default {
 		name: 'Contact',
 		props: ['dataTarget', 'contact'],
         data () {
             return {
-                lastMessage : {body: "New Message", postedOn: new Date()}
+                lastMessage : {body: "New Message", postedOn: new Date()},
+                messages: [],
             }
         },
+        created () {
+            axios.get(`/messages/${window.User.userId}/${this.contact._id}`).then(
+                function (response) {
+                    console.log(response)
+                    this.messages = response.data
+                })
+        }
 
 	}
 </script>

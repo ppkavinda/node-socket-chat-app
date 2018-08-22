@@ -23,5 +23,11 @@ var MessageSchema = new mongoose.Schema({
 	},
 })
 
+MessageSchema.statics.getMessagesWith = function (user1, user2, callback) {
+	User.find({to: user1, to: user2, from: user2, from: user1}, function (err, result) {
+		callback(err, result)
+	})
+}
+
 var Message = mongoose.model('message', MessageSchema)
 module.exports = Message

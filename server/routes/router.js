@@ -123,4 +123,10 @@ router.get('/myinfo', auth, function (req, res, next) {
 	})
 })
 
+router.get('/messages/:u1/:u2', function (req, res, next) {
+	Message.getMessagesWith(u1, u2, function (err, result) {
+		return result
+	})
+})
+
 module.exports = router
