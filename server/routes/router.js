@@ -7,7 +7,7 @@ var path = require('path')
 // auth middleware
 function auth(req, res, next) {
 	User.getUser((req.session.userId), function (err, result) {
-		if (result.online) {
+		if (req.session && req.session.userId) {
 			next()
 		} else {
 			res.status = 400
@@ -76,7 +76,7 @@ router.post('/register', function (req, res, next) {
 			password: req.body.password,
 			age: req.body.age,
 			passwordConf: req.body.passwordConf,
-			online: true,
+			online: false,
 		}
 
 		User.create(userData, function (error, user) {

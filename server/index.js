@@ -78,7 +78,15 @@ var Message = require('./models/message')
 io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
 
+	// broadcast newly connected user to all the users (if it's not a refresh)
+	User.getUser(global.userId, function (err, result) {
+		if (!result.online) {
+			socket.broadcast.emit('user-connect', result)
+		}
+	})
+
 	clientsList[global.userId] = socket
+	
 	User.login(global.userId, function (err, result) {
 		
 	})
@@ -86,11 +94,6 @@ io.on('connection', function (socket) {
 // send the online users list to the newly connected user
 	User.getOnlineUsers(function (err, result) {
 		socket.emit('init-contact', result)
-	})
-
-// broadcast newly connected user to all the users
-	User.getUser(global.userId, function (err, result) {
-		socket.broadcast.emit('user-connect', result)
 	})
 
 	socket.on('send-message', function (msg) {
@@ -108,13 +111,12 @@ io.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
 		console.log('Disconnected: ID - ' + socket.id)
-		var uid = global.userId
 		delete clientsList[global.userId]
 
 		setTimeout(function() {
 			if (!clientsList[global.userId]) {
 				socket.broadcast.emit('user-disconnect', { userId: global.userId})
-				User.logout(uid, function (err, result) {
+				User.logout(global.userId, function (err, result) {
 					// if user close the browser tab, put him off line after 1s
 				})
 			}

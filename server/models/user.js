@@ -41,9 +41,9 @@ UserSchema.statics.authenticate = function (email, password, callback) {
 			bcrypt.compare(password, user.password, function (err, result) {
 				if (result === true) {
 					// change online status
-					User.login(user._id, function (err, result) {
-						console.log('authenticate login')
-					})
+					// User.login(user._id, function (err, result) {
+						// console.log('authenticate login')
+					// })
 					return callback(null, user)
 				} else {
 					return callback()

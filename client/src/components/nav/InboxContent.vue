@@ -25,9 +25,15 @@
         },
         created () {
             socket.on('init-contact', (contacts) => {
-                this.contacts = contacts
+                // console.log(contacts)
+                for (var i=0; i<contacts.length; i++) {
+                    if (contacts[i]._id != window.User.userId) {
+                        this.contacts.push(contacts[i])
+                    }
+                }
             })
             socket.on('user-disconnect', (user) => {
+                console.log(user)
                 this.contacts.splice(this.contacts.indexOf(user.userId), 1)
             })
             socket.on('user-connect', (user) => {
