@@ -24,8 +24,13 @@
             }
         },
         created () {
+            socket.on('my-info', function (myInfo) {
+                console.log("myInfo")
+                console.log(myInfo)
+                window.User = myInfo
+            })
             socket.on('init-contact', (contacts) => {
-                // console.log(contacts)
+                console.log(contacts)
                 for (var i=0; i<contacts.length; i++) {
                     if (contacts[i]._id != window.User.userId) {
                         this.contacts.push(contacts[i])

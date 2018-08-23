@@ -59,7 +59,7 @@ UserSchema.statics.login = function (userId, callback) {
 }
 UserSchema.statics.logout = function (userId, callback) {
 	User.findOneAndUpdate({_id: userId}, {online: false}, function (err, result) {
-		return callback(result)
+		return callback(err, result)
 	})
 }
 

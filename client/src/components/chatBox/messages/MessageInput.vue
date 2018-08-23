@@ -30,7 +30,7 @@ export default {
 				// this.messageFiles = ''
 				// console.log(this.messageFiles)
 			// }
-			socket.emit('send-message', {to:'5b796a9715969f20b0540c62', from: '5b7908ac6d6a7c24ec96ae12', body: 'message body cool', postedOn: new Date(), type: 'private'})
+			socket.emit('send-message', {to:'5b796a9715969f20b0540c62', from: window.User.userId, body: 'message body cool', postedOn: new Date(), type: 'private'})
 		},
 		// TODO sending files
 		processFile (event) {

@@ -26,10 +26,7 @@ export default {
     }
   },
     created () {
-    axios.get('/myinfo').then(function (response) {
-      window.User = response.data
-      console.log(User)
-    })
+
   }
 }
 </script>

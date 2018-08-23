@@ -42,7 +42,7 @@ app.use(bodyParser.urlencoded({extended: false }))
 
 // printing the url of the request
 app.use((req, res, next) => {
-	console.log(req.method + " " + req.url)
+	// console.log(req.method + " " + req.url)
 	next()
 })
 
@@ -72,13 +72,15 @@ var server = app.listen(PORT, function () {
 })
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////	SOCKET.IO 		////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-var io = socketIo(server).of('/chat')
+global.io = socketIo(server).of('/chat')
 
 // use session middleware for socket.io requests
-io.use(function (socket, next) {
+global.io.use(function (socket, next) {
 	sessionMiddleware(socket.request, socket.request.res, next)
 })
 
@@ -87,56 +89,61 @@ var Message = require('./models/message')
 
 // listening for a connection
 io.on('connection', function (socket) {
-	var uid = socket.request.session.userId
 	console.log('New connection: ID - ' + socket.id)
+	var uid = socket.request.session.userId
 
-	// broadcast newly connected user to all the users (if it's not a refresh)
-	if (!clientsList[uid]) {
-		User.getUser(uid, function (err, result) {
-			socket.broadcast.emit('user-connect', result)
-		})
-	}
 	clientsList[uid] = socket
-
 	// set the connected users online status :true
-		User.login(uid, function (err, result) {})
+	User.login(uid, function (err, result) {})
 
-// send the online users list to the newly connected user
-	User.getOnlineUsers(function (err, result) {
-		socket.emit('init-contact', result)
+	User.getUser(uid, function (err, result) {
+		var info = {
+			email: result.email,
+			username: result.username,
+			age: result.age,
+			userId: result._id,
+		}
+		clientsList[uid].user = info
+		socket.emit('my-info', info)
+		socket.broadcast.emit('user-connect', info)
+
+		// send the online users list to the newly connected user
+		User.getOnlineUsers(function (err, result) {
+			socket.emit('init-contact', result)
+		})
+	})
+
+
+	socket.on('init-messages', function (contact_ids) {
+		Message.getMessagesWith(contact_ids.user1, contact_ids.u2, function (err, result) {
+			return result
+		})
 	})
 
 	socket.on('send-message', function (msg) {
 		console.log(socket.id + " : " + JSON.stringify(msg))
-		if (msg.type == 'private') {
-			clientsList[msg.to].emit('send-message', msg)
-		} else if (msg.type == 'public') {
-			socket.broadcast.emit('send-message', data)
-		}
+		
+		Message.create(msg, function (err, message) {
+			if (msg.type == 'private') {
+				clientsList[msg.to].emit('send-message', msg)
+			} else if (msg.type == 'public') {
+				socket.broadcast.emit('send-message', data)
+			}
+		})
 	})
-
 	socket.on('typing', function (data) {
 		socket.broadcast.emit('typing', data)
 	})
 
 	socket.on('disconnect', function () {
 		console.log('Disconnected: ID - ' + socket.id)
+		delete clientsList[uid]
 
-		// if user close the browser tab, put him off line after 1s
-		User.logout(global.userId, function (err, result) {})
-			
-		setTimeout(function() {
-			User.getUser(uid, function (err, result) {
-				if (!result.online) {
-					socket.broadcast.emit('user-disconnect', { userId: uid})
-				}
-				socket.request.session.destroy(function (err) {
-					if (!err) {
-						console.log('session cleared.')
-					}
-				})
-				delete clientsList[uid]
-			})
-		}, 1000);
+		// if user close the browser tab, put him off line
+		User.logout(uid, function (err, result) {})
+
+		// inform others
+		socket.broadcast.emit('user-disconnect', { userId: uid})
+		
 	})
 })

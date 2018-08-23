@@ -30,8 +30,6 @@ router.get('/', function (req, res, next) {
 })
 
 router.get('/chat', auth, function (req, res, next) {
-	global.userId = req.session.userId
-	console.log('/chat' + req.session.userId)
 	return res.sendFile(path.join(__dirname + '/../../client/index.html'))
 })
 
@@ -109,24 +107,8 @@ router.get('/logout', auth, function (req, res, next) {
 	}
 })
 
-router.get('/myinfo', auth, function (req, res, next) {
-	User.getUser(req.session.userId, function (err, result) {
-		if (err) {
-			next(err)
-		}
-		return res.send({
-			email: result.email,
-			username: result.username,
-			age: result.age,
-			userId: result._id,
-		})
-	})
-})
-
 router.get('/messages/:u1/:u2', function (req, res, next) {
-	Message.getMessagesWith(u1, u2, function (err, result) {
-		return result
-	})
+
 })
 
 module.exports = router

@@ -8,6 +8,8 @@ Vue.use(require('vue-moment'))
 // Vue.use(socket)
 window.Event = new Vue();
 
+
+
 new Vue({
   el: '#app',
   render: h => h(App)

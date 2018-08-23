@@ -29,11 +29,12 @@ import axios from 'axios'
             }
         },
         created () {
-            axios.get(`/messages/${window.User.userId}/${this.contact._id}`).then(
-                function (response) {
-                    console.log(response)
-                    this.messages = response.data
-                })
+            // axios.get(`/messages/${window.User.userId}/${this.contact._id}`).then(
+                // function (response) {
+                    // console.log(response)
+                    // this.messages = response.data
+                // })
+            socket.emit('init-messages', {user1: User.userId, user2: this.contact._id})
         }
 
 	}

@@ -6,7 +6,7 @@
         <div class="message-body-inner">
             <div class="message-info">
                 <h4> {{ message.username }} </h4>
-                <h5> <i class="fa fa-clock-o"></i> {{ message.postedOn }} </h5>
+                <h5> <i class="fa fa-clock-o"></i> {{ message.postedOn | moment("h:mm a") }} </h5>
             </div>
             <hr>
             <div class="message-text">
