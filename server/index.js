@@ -8,7 +8,7 @@ var socketIo = require('socket.io')
 var path = require('path')
 
 const PORT = 3000
-global.clientsList = {}
+var clientsList = {}
 
 // connecting to MongoDB
 mongoose.connect('mongodb://localhost/socket-chat', {useNewUrlParser: true})
@@ -22,14 +22,19 @@ db.once('open', function () {
 })
 
 // use session for track logins
-app.use(session({
+var session_store = new MongoStore({
+		mongooseConnection: db
+	})
+// session middleware settings
+var sessionMiddleware = session({
 	secret: 'work hard',
 	resave: true,
 	saveUninitialized: true,
-	store: new MongoStore({
-		mongooseConnection: db
-	})
-}))
+	store: session_store,
+})
+
+// use session middleware for normal requests
+app.use(sessionMiddleware)
 
 // parse incomming requests
 app.use(bodyParser.json())
@@ -67,29 +72,34 @@ var server = app.listen(PORT, function () {
 })
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 var io = socketIo(server).of('/chat')
+
+// use session middleware for socket.io requests
+io.use(function (socket, next) {
+	sessionMiddleware(socket.request, socket.request.res, next)
+})
 
 var User = require('./models/user')
 var Message = require('./models/message')
 
 // listening for a connection
 io.on('connection', function (socket) {
+	var uid = socket.request.session.userId
 	console.log('New connection: ID - ' + socket.id)
 
 	// broadcast newly connected user to all the users (if it's not a refresh)
-	User.getUser(global.userId, function (err, result) {
-		if (!result.online) {
+	if (!clientsList[uid]) {
+		User.getUser(uid, function (err, result) {
 			socket.broadcast.emit('user-connect', result)
-		}
-	})
+		})
+	}
+	clientsList[uid] = socket
 
-	clientsList[global.userId] = socket
-	
-	User.login(global.userId, function (err, result) {
-		
-	})
+	// set the connected users online status :true
+		User.login(uid, function (err, result) {})
 
 // send the online users list to the newly connected user
 	User.getOnlineUsers(function (err, result) {
@@ -111,15 +121,22 @@ io.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
 		console.log('Disconnected: ID - ' + socket.id)
-		delete clientsList[global.userId]
 
+		// if user close the browser tab, put him off line after 1s
+		User.logout(global.userId, function (err, result) {})
+			
 		setTimeout(function() {
-			if (!clientsList[global.userId]) {
-				socket.broadcast.emit('user-disconnect', { userId: global.userId})
-				User.logout(global.userId, function (err, result) {
-					// if user close the browser tab, put him off line after 1s
+			User.getUser(uid, function (err, result) {
+				if (!result.online) {
+					socket.broadcast.emit('user-disconnect', { userId: uid})
+				}
+				socket.request.session.destroy(function (err) {
+					if (!err) {
+						console.log('session cleared.')
+					}
 				})
-			}
+				delete clientsList[uid]
+			})
 		}, 1000);
 	})
 })

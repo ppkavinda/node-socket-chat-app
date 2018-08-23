@@ -31,7 +31,7 @@ router.get('/', function (req, res, next) {
 
 router.get('/chat', auth, function (req, res, next) {
 	global.userId = req.session.userId
-	console.log(req.session.userId)
+	console.log('/chat' + req.session.userId)
 	return res.sendFile(path.join(__dirname + '/../../client/index.html'))
 })
 
