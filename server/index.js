@@ -101,7 +101,7 @@ io.on('connection', function (socket) {
 			email: result.email,
 			username: result.username,
 			age: result.age,
-			userId: result._id,
+			_id: result._id,
 		}
 		clientsList[uid].user = info
 		socket.emit('my-info', info)
@@ -109,14 +109,14 @@ io.on('connection', function (socket) {
 
 		// send the online users list to the newly connected user
 		User.getOnlineUsers(function (err, result) {
-			socket.emit('init-contact', result)
+			socket.emit('init-contact', result.filter(e => e._id != uid))
 		})
 	})
 
 
 	socket.on('init-messages', function (contact_ids) {
-		Message.getMessagesWith(contact_ids.user1, contact_ids.u2, function (err, result) {
-			return result
+		Message.getMessagesWith(uid, contact_ids.user2, function (err, result) {
+			socket.emit('init-messages', result)
 		})
 	})
 

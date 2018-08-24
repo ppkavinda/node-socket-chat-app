@@ -28,13 +28,16 @@ import axios from 'axios'
                 messages: [],
             }
         },
-        created () {
+        mounted () {
             // axios.get(`/messages/${window.User.userId}/${this.contact._id}`).then(
                 // function (response) {
                     // console.log(response)
                     // this.messages = response.data
                 // })
-            socket.emit('init-messages', {user1: User.userId, user2: this.contact._id})
+            socket.emit('init-messages', {user2: this.contact._id})
+            socket.on('init-messages', function (messages) {
+                console.log(messages)
+            })
         }
 
 	}

@@ -30,7 +30,6 @@
                 window.User = myInfo
             })
             socket.on('init-contact', (contacts) => {
-                console.log(contacts)
                 for (var i=0; i<contacts.length; i++) {
                     if (contacts[i]._id != window.User.userId) {
                         this.contacts.push(contacts[i])
@@ -42,7 +41,9 @@
                 this.contacts.splice(this.contacts.indexOf(user.userId), 1)
             })
             socket.on('user-connect', (user) => {
-                this.contacts.push(user)
+                if (user._id != window.User.userId) {
+                    this.contacts.push(user)
+                }
             })
         }
 	}
