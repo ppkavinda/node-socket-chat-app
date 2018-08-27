@@ -6,7 +6,7 @@
             <!-- <input type="file" ref="messageFile" @change="processFile"> -->
             <i class="fa fa-paperclip"></i>
         </label>
-        <button @click="chat" type="button" class="send-message-button btn-info"> <i class="fa fa-send"></i> </button>
+        <button @click="sendChat" type="button" class="send-message-button btn-info"> <i class="fa fa-send"></i> </button>
     </div>
 </template>
 
@@ -16,27 +16,38 @@ export default {
 		return {
 			messageBody : '',
 			messageFiles: '',
+			selectedUser: '',
 		}
 	},
 
 	methods: {
-		chat () {
-			// if (this.messageBody != '') {
-				// window.Event.$emit('send-chat', { username: "Mr. Robot", body: this.messageBody, type: 'notMe', postedOn: new Date() })
-				// this.messageBody = ''
-			// }
+		sendChat () {
+			if (this.messageBody != '') {
+				window.Event.$emit('send-message',  {
+					to: this.selectedUser,
+					from: window.User.userId,
+					body: this.messageBody,
+					postedOn: new Date(),
+					type: 'private'
+				})
+				this.messageBody = ''
+			}
 			// if (this.messageFiles != '') {
 				// window.Event.$emit('send-chat', {username: "Mr. Robot", body: this.messageFiles, type: 'notMe', postedOn: new Date() })
 				// this.messageFiles = ''
 				// console.log(this.messageFiles)
 			// }
-			socket.emit('send-message', {to:'5b796a9715969f20b0540c62', from: window.User.userId, body: 'message body cool', postedOn: new Date(), type: 'private'})
 		},
 		// TODO sending files
 		processFile (event) {
 			this.messageFiles = this.$refs.messageFile.files
 			console.log(this.messageFiles)
 		}
+	},
+	mounted () {
+		window.Event.$on('contact-selected', (selContact) => {
+			this.selectedUser = selContact.contactId
+		})
 	}
 }
 </script>

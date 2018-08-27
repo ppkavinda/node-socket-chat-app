@@ -5,10 +5,10 @@
 
     <div class="vcentered info-combo">
         <h3 class="no-margin-bottom name"> {{contact.username}} </h3>
-        <h5>{{ lastMessage.body }}</h5>
+        <h5>{{ messages[messages.length-1] ? messages[messages.length-1].body : '' }}</h5>
     </div>
     <div class="contacts-add">
-        <span class="message-time"> {{ lastMessage.postedOn | moment("h:mm a") }}</span>
+        <span class="message-time"> {{ messages[messages.length-1] ? messages[messages.length-1].postedOn : '' | moment("h:mm a") }}</span>
         <i class="fa fa-trash-o"></i>
         <i class="fa fa-paperclip"></i>
     </div>
@@ -24,13 +24,12 @@ import axios from 'axios'
 		props: ['dataTarget', 'contact'],
         data () {
             return {
-                lastMessage : {body: "New Message", postedOn: new Date()},
                 messages: [],
             }
         },
         methods: {
             selectContact () {
-                window.Event.$emit('contact-selected', this.messages)
+                window.Event.$emit('contact-selected', {messages: this.messages, contactId: this.contact._id} )
             }
         },
         mounted () {

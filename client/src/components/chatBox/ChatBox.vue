@@ -5,7 +5,7 @@
 	<div class="message-chat">
 	    <div class="chat-body">
 	    	<div v-for="msg in messages">
-		        <bubble-info v-if="msg.type != 'me'" :message="msg"/>
+		        <bubble-info v-if="msg.to != me._id" :message="msg"/>
 		        <bubble-me v-else :message="msg"/>
 	    	</div>
 	    </div>
@@ -29,12 +29,17 @@
 				messages : [],
 			}
 		},
-
+		computed: {
+			me: function () {
+				return window.User
+			}
+		},
 		methods: {
 
 		},
 
 		mounted () {
+
 			// window.socket.on('chat', (msg) => {
 				// this.messages.push(msg)
 			// })
@@ -43,17 +48,17 @@
 					// socket.emit('get-contact', "getcontact")
 			// })
 
-			// window.Event.$on('send-chat', (msg) => {
-				// socket.emit('chat', msg);
-				// this.messages.push({username: "me", body: msg.body, type: "me", postedOn: msg.postedOn})
-			// })
-			window.socket.on('send-message', (msg) => {
-				console.log(msg)
+			window.Event.$on('send-message', (msg) => {
+				socket.emit('send-message', msg);
 				this.messages.push(msg)
 			})
+			// window.socket.on('send-message', (msg) => {
+				// console.log(msg)
+				// this.messages.push(msg)
+			// })
 
             window.Event.$on('contact-selected', (messages) => {
-            	this.messages = messages
+            	this.messages = messages.messages
             })
 		}
 	}
