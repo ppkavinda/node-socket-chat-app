@@ -23,6 +23,9 @@
                 contacts: [],
             }
         },
+        methods: {
+            
+        },
         created () {
             socket.on('my-info', function (myInfo) {
                 console.log("myInfo")
@@ -45,6 +48,8 @@
                     this.contacts.push(user)
                 }
             })
-        }
+
+        },
+
 	}
 </script>

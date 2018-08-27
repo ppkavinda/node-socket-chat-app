@@ -77,6 +77,9 @@ var server = app.listen(PORT, function () {
 ////////////////////////////////////////////////////////////////	SOCKET.IO 		////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+var User = require('./models/user')
+var Message = require('./models/message')
+
 global.io = socketIo(server).of('/chat')
 
 // use session middleware for socket.io requests
@@ -84,33 +87,34 @@ global.io.use(function (socket, next) {
 	sessionMiddleware(socket.request, socket.request.res, next)
 })
 
-var User = require('./models/user')
-var Message = require('./models/message')
-
 // listening for a connection
 io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
 	var uid = socket.request.session.userId
-
+	console.log("UID: " + uid)
 	clientsList[uid] = socket
 	// set the connected users online status :true
-	User.login(uid, function (err, result) {})
+	User.login(uid, function (err, result) {if (err) {console.log(err)}})
 
 	User.getUser(uid, function (err, result) {
-		var info = {
-			email: result.email,
-			username: result.username,
-			age: result.age,
-			_id: result._id,
-		}
-		clientsList[uid].user = info
-		socket.emit('my-info', info)
-		socket.broadcast.emit('user-connect', info)
+		if (err) {
+			console.log(err)
+		} else {
+			var info = {
+				email: result.email,
+				username: result.username,
+				age: result.age,
+				_id: result._id,
+			}
+			clientsList[uid].user = info
+			socket.emit('my-info', info)
+			socket.broadcast.emit('user-connect', info)
 
-		// send the online users list to the newly connected user
-		User.getOnlineUsers(function (err, result) {
-			socket.emit('init-contact', result.filter(e => e._id != uid))
-		})
+			// send the online users list to the newly connected user
+			User.getOnlineUsers(function (err, result) {
+				socket.emit('init-contact', result.filter(e => e._id != uid))
+			})
+		}
 	})
 
 

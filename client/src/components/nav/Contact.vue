@@ -1,5 +1,5 @@
 <template>
-<li data-toggle="tab" :data-target="dataTarget" class="">
+<li @click="selectContact" data-toggle="tab" :data-target="dataTarget" class="">
     <div class="message-count"> 1 </div>
     <img alt="" class="img-circle medium-image" src="https://bootdey.com/img/Content/avatar/avatar1.png">
 
@@ -28,6 +28,11 @@ import axios from 'axios'
                 messages: [],
             }
         },
+        methods: {
+            selectContact () {
+                window.Event.$emit('contact-selected', this.messages)
+            }
+        },
         mounted () {
             // axios.get(`/messages/${window.User.userId}/${this.contact._id}`).then(
                 // function (response) {
@@ -35,8 +40,8 @@ import axios from 'axios'
                     // this.messages = response.data
                 // })
             socket.emit('init-messages', {user2: this.contact._id})
-            socket.on('init-messages', function (messages) {
-                console.log(messages)
+            socket.on('init-messages', (messages) => {
+                this.messages = messages
             })
         }
 

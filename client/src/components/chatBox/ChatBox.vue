@@ -51,6 +51,10 @@
 				console.log(msg)
 				this.messages.push(msg)
 			})
+
+            window.Event.$on('contact-selected', (messages) => {
+            	this.messages = messages
+            })
 		}
 	}
 </script>
