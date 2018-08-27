@@ -1,11 +1,11 @@
 <template>
 <li @click="selectContact" data-toggle="tab" :data-target="dataTarget" class="">
-    <div class="message-count"> 1 </div>
+    <div class="message-count" v-if="unseenCount > 0"> {{ unseenCount }} </div>
     <img alt="" class="img-circle medium-image" src="https://bootdey.com/img/Content/avatar/avatar1.png">
 
     <div class="vcentered info-combo">
-        <h3 class="no-margin-bottom name"> {{contact.username}} </h3>
-        <h5> <strong>{{ prefix }} </strong>{{ messages[messages.length-1] ? messages[messages.length-1].body : '' }}</h5>
+        <h3 style="font-weight:bold" :class="{ 'bold' : !seen }" class="no-margin-bottom name"> {{contact.username}} </h3>
+        <h5><strong>{{ prefix }} </strong><span :class="{ 'bold' : !seen }">{{ messages[messages.length-1] ? messages[messages.length-1].body : '' }}</span></h5>
     </div>
     <div class="contacts-add">
         <span class="message-time"> {{ messages[messages.length-1] ? messages[messages.length-1].postedOn : '' | moment("h:mm a") }}</span>
@@ -25,11 +25,15 @@ import axios from 'axios'
         data () {
             return {
                 messages: [],
+                seen: true,
+                unseenCount: 0,
             }
         },
         methods: {
             selectContact () {
                 window.Event.$emit('contact-selected', {messages: this.messages, contactId: this.contact._id} )
+                this.seen = true
+                this.unseenCount = 0
             }
         },
         mounted () {
@@ -45,6 +49,8 @@ import axios from 'axios'
             socket.on('send-message', (message) => {
                 if (this.contact._id == message.from) {
                     this.messages.push(message)
+                    this.seen = false
+                    this.unseenCount++
                 }
             })
         },
@@ -61,3 +67,9 @@ import axios from 'axios'
 
 	}
 </script>
+
+<style>
+    .bold {
+        font-weight: bold
+    }
+</style>
