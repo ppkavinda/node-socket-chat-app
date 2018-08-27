@@ -7,8 +7,9 @@ var MessageSchema = new mongoose.Schema({
 		ref: 'User',
 	},
 	to: {
-		type: String,
+		type: mongoose.Schema.Types.ObjectId,
 		required: true,
+		ref: 'User'
 	},
 	body: {
 		type: String,

@@ -5,7 +5,7 @@
 	<div class="message-chat">
 	    <div class="chat-body">
 	    	<div v-for="msg in messages">
-		        <bubble-info v-if="msg.to != me._id" :message="msg"/>
+		        <bubble-info v-if="msg.to == me._id" :message="msg"/>
 		        <bubble-me v-else :message="msg"/>
 	    	</div>
 	    </div>

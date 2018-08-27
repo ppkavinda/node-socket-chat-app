@@ -5,7 +5,7 @@
 
     <div class="vcentered info-combo">
         <h3 class="no-margin-bottom name"> {{contact.username}} </h3>
-        <h5>{{ messages[messages.length-1] ? messages[messages.length-1].body : '' }}</h5>
+        <h5> <strong>{{ prefix }} </strong>{{ messages[messages.length-1] ? messages[messages.length-1].body : '' }}</h5>
     </div>
     <div class="contacts-add">
         <span class="message-time"> {{ messages[messages.length-1] ? messages[messages.length-1].postedOn : '' | moment("h:mm a") }}</span>
@@ -42,7 +42,22 @@ import axios from 'axios'
             socket.on('init-messages', (messages) => {
                 this.messages = messages
             })
-        }
+            socket.on('send-message', (message) => {
+                if (this.contact._id == message.from) {
+                    this.messages.push(message)
+                }
+            })
+        },
+        computed: {
+            me: function () {
+                return window.User
+            },
+            prefix: function () {
+                if (this.messages[this.messages.length-1]) {
+                    return (this.messages[this.messages.length-1].from == this.me._id) ? 'You: ' : ''
+                }
+            }
+        },
 
 	}
 </script>

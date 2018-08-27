@@ -1,6 +1,6 @@
 <template>
 	<div class="chat-footer">
-        <textarea class="send-message-text" v-model="messageBody" @keydown.ctrl.enter="chat"></textarea>
+        <textarea class="send-message-text" v-model="messageBody" @keydown.ctrl.enter="sendChat"></textarea>
         <label class="upload-file">
         <!-- For send files  TODO -->
             <!-- <input type="file" ref="messageFile" @change="processFile"> -->
@@ -25,7 +25,7 @@ export default {
 			if (this.messageBody != '') {
 				window.Event.$emit('send-message',  {
 					to: this.selectedUser,
-					from: window.User.userId,
+					from: window.User._id,
 					body: this.messageBody,
 					postedOn: new Date(),
 					type: 'private'

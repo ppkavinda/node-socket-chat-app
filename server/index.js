@@ -128,7 +128,10 @@ io.on('connection', function (socket) {
 		console.log(socket.id + " : " + JSON.stringify(msg))
 		
 		Message.create(msg, function (err, message) {
-			if (msg.type == 'private') {
+			if (err) {
+				console.log(err)
+			}
+			else if (msg.type == 'private') {
 				clientsList[msg.to].emit('send-message', msg)
 			} else if (msg.type == 'public') {
 				socket.broadcast.emit('send-message', data)
