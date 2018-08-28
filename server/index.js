@@ -80,16 +80,17 @@ var server = app.listen(PORT, function () {
 var User = require('./models/user')
 var Message = require('./models/message')
 
-global.io = socketIo(server).of('/chat')
+var io = socketIo(server).of('/chat')
 
 // use session middleware for socket.io requests
-global.io.use(function (socket, next) {
+io.use(function (socket, next) {
 	sessionMiddleware(socket.request, socket.request.res, next)
 })
 
 // listening for a connection
 io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
+	console.log(socket.request.session)
 	var uid = socket.request.session.userId
 	console.log("UID: " + uid)
 	clientsList[uid] = socket

@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import io from 'socket.io-client'
 
-window.socket = io('localhost:3000/chat')
+window.socket = io('10.22.162.183:3000/chat')
 
 Vue.use(require('vue-moment'))
 // Vue.use(socket)
