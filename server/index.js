@@ -7,6 +7,9 @@ var MongoStore = require('connect-mongo')(session)
 var socketIo = require('socket.io')
 var path = require('path')
 
+var User = require('./models/user')
+var Message = require('./models/message')
+
 const PORT = 3000
 var clientsList = {}
 
@@ -23,8 +26,9 @@ db.once('open', function () {
 
 // use session for track logins
 var session_store = new MongoStore({
-		mongooseConnection: db
-	})
+	mongooseConnection: db
+})
+
 // session middleware settings
 var sessionMiddleware = session({
 	secret: 'work hard',
@@ -71,27 +75,24 @@ var server = app.listen(PORT, function () {
 	console.log('Server started at port: ' + PORT)
 })
 
+var sharedsession = require('express-socket.io-session')
 
+var io = socketIo(server).of('/chat')
+
+// use session middleware for socket.io requests
+io.use(sharedsession(sessionMiddleware, {
+	autoSave: true
+}))
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////	SOCKET.IO 		////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var User = require('./models/user')
-var Message = require('./models/message')
-
-var io = socketIo(server).of('/chat')
-
-// use session middleware for socket.io requests
-io.use(function (socket, next) {
-	sessionMiddleware(socket.request, socket.request.res, next)
-})
-
 // listening for a connection
 io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
-	console.log(socket.request.session)
-	var uid = socket.request.session.userId
+	console.log(socket.handshake.session)
+	var uid = socket.handshake.session.userId
 	console.log("UID: " + uid)
 	clientsList[uid] = socket
 	// set the connected users online status :true
@@ -118,7 +119,6 @@ io.on('connection', function (socket) {
 		}
 	})
 
-
 	socket.on('init-messages', function (contact_ids) {
 		Message.getMessagesWith(uid, contact_ids.user2, function (err, result) {
 			socket.emit('init-messages', result)
@@ -139,6 +139,7 @@ io.on('connection', function (socket) {
 			}
 		})
 	})
+
 	socket.on('typing', function (data) {
 		socket.broadcast.emit('typing', data)
 	})
@@ -146,6 +147,19 @@ io.on('connection', function (socket) {
 	socket.on('disconnect', function () {
 		console.log('Disconnected: ID - ' + socket.id)
 		delete clientsList[uid]
+
+		if (socket.request.session) {
+			var userId = socket.request.session.userId
+			socket.request.session.destroy(function (err) {
+				if (err) {
+					return next(err)
+				} else {
+					User.logout(userId, function (result) {
+						console.log('logout disconnect')
+					})
+				}
+			})
+		}
 
 		// if user close the browser tab, put him off line
 		User.logout(uid, function (err, result) {})

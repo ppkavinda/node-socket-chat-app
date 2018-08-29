@@ -46,6 +46,8 @@ router.post('/login', function (req, res, next) {
 				return next(err)
 			} else {
 				req.session.userId = user._id
+				console.log('user logged in')
+				console.log(req.session)
 				return res.redirect('/chat')
 			}
 		})
