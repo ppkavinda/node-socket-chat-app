@@ -47,7 +47,6 @@ router.post('/login', function (req, res, next) {
 			} else {
 				req.session.userId = user._id
 				console.log('user logged in')
-				console.log(req.session)
 				return res.redirect('/chat')
 			}
 		})
@@ -107,10 +106,6 @@ router.get('/logout', auth, function (req, res, next) {
 			}
 		})
 	}
-})
-
-router.get('/messages/:u1/:u2', function (req, res, next) {
-
 })
 
 module.exports = router

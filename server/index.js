@@ -3,6 +3,7 @@ var app = express()
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
 var session = require('express-session')
+var sharedsession = require('express-socket.io-session')
 var MongoStore = require('connect-mongo')(session)
 var socketIo = require('socket.io')
 var path = require('path')
@@ -46,7 +47,7 @@ app.use(bodyParser.urlencoded({extended: false }))
 
 // printing the url of the request
 app.use((req, res, next) => {
-	// console.log(req.method + " " + req.url)
+	console.log(req.method + " " + req.url)
 	next()
 })
 
@@ -75,9 +76,7 @@ var server = app.listen(PORT, function () {
 	console.log('Server started at port: ' + PORT)
 })
 
-var sharedsession = require('express-socket.io-session')
-
-var io = socketIo(server).of('/chat')
+var io = socketIo.listen(server).of('/chat')
 
 // use session middleware for socket.io requests
 io.use(sharedsession(sessionMiddleware, {
@@ -91,7 +90,6 @@ io.use(sharedsession(sessionMiddleware, {
 // listening for a connection
 io.on('connection', function (socket) {
 	console.log('New connection: ID - ' + socket.id)
-	console.log(socket.handshake.session)
 	var uid = socket.handshake.session.userId
 	console.log("UID: " + uid)
 	clientsList[uid] = socket

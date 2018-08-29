@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import io from 'socket.io-client'
 
-window.socket = io()
+window.socket = io.connect('/chat')
 
 Vue.use(require('vue-moment'))
 // Vue.use(socket)
